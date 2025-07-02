@@ -1,0 +1,40 @@
+{%load static%} 
+
+<link rel="stylesheet" href="{% static 'style.css' %} ">
+<style>
+h3{
+    color: red;
+    text-align: center; /* Center-align the message */
+    margin-top: 10px; /* Add some spacing */
+}
+</style>
+
+<body>
+	<title>Login</title>
+    <div class="title">PRO-TECH COMPUTER REPAIRS</div>
+	<div class="wrapper">
+		<form action="login" method="POST">
+            {% csrf_token %} 
+			<h1>Login</h1>
+            {%for message in messages%}
+            <h3>{{message}}</h3>
+            {%endfor%}
+			<div class="input-box">
+				<input type="text" name="username" placeholder="Username" required>
+				</div>
+			<div class="input-box">
+				<input type="password" name="password" placeholder="Password" required>
+                
+				</div>
+			<div class="remember-forgot">
+				<label><input type="checkbox"> Remember me</label>
+				<a href="#">Forgot Password?</a>
+				</div>
+			<button type="submit" class="btn">Login</button>
+			<div class="register-link">
+				<p>Don't have an account?<a href="register">Register</a></p>
+				</div>
+			</form>
+		</div>
+</body>
+

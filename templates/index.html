@@ -1,0 +1,204 @@
+<!--{% load static %}-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro-Tech Computer Repairs</title>
+    <!--<link rel="stylesheet" href="{% static 'style.css' %}">-->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <a href="https://wa.me/263789713315" class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
+    <i class='bx bxl-whatsapp'></i>
+</a>
+    <style>
+        body {
+            background: url('{% static "pexels-felixmittermeier.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+        .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 18px 32px 0 0;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .services-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 30px auto 0 auto;
+            text-align: center;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px 16px;
+            margin-top: 10px;
+        }
+        .service-card {
+            background: rgba(0,0,0,0.35);
+            border-radius: 12px;
+            padding: 16px 12px 10px 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            color: #fff;
+            min-height: unset;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .service-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.08em;
+            font-weight: bold;
+            color: #fff;
+        }
+        .service-card p {
+            margin: 0;
+            color: #e0e0e0;
+            font-size: 0.98em;
+        }
+        @media (max-width: 900px) {
+            .services-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Title styling */
+        .page-title {
+            text-align: center;
+            font-size: 48px;
+            color: grey;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .action-button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            display: inline-block;
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .action-button:hover {
+            background: #388e3c;
+        }
+        .page-caption {
+            text-align: center;
+            font-size: 20px;
+            color: white;
+            margin-bottom: 40px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .footer {
+            width: 100%;
+            background: rgba(51, 51, 51, 0.85);
+            color: #fff;
+            text-align: center;
+            padding: 18px 0 12px 0;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+         /* ...existing styles... */
+        .footer i {
+            font-size: 1.2em;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        .footer a {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .whatsapp-float {
+        position: fixed;
+        width: 56px;
+        height: 56px;
+        bottom: 90px;
+        right: 28px;
+        background-color: #25d366;
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 36px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+        }
+        .whatsapp-float:hover {
+            background: #128c7e;
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <button class="action-button" onclick="window.location.href='login'">Login</button>
+    </div>
+    <div class="page-title">Welcome to Pro-Tech Computer Repairs</div>
+    <div class="page-caption">Your Trusted Partner for Device Repairs & Maintenance</div>
+
+    <!-- Services Offered Section -->
+    <div class="services-section">
+        <h2>Services Offered</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <h3>Operating System Installation<br><span style="font-weight:normal;font-size:0.95em;">(e.g. Windows, Linux, Zorin)</span></h3>
+                <p>We install and configure various operating systems to ensure your computer runs smoothly and securely.</p>
+            </div>
+            <div class="service-card">
+                <h3>Windows and Office Activation</h3>
+                <p>We help you activate your Windows OS and Microsoft Office products to unlock all features and stay compliant.</p>
+            </div>
+            <div class="service-card">
+                <h3>Software Installation</h3>
+                <p>We install a wide range of software applications tailored to your needs, ensuring compatibility and performance.</p>
+            </div>
+            <div class="service-card">
+                <h3>PC Unlocking</h3>
+                <p>Locked out of your PC? We provide safe unlocking services to restore your access without data loss.</p>
+            </div>
+            <div class="service-card">
+                <h3>Computer Upgrades<br><span style="font-weight:normal;font-size:0.95em;">(e.g. RAM)</span></h3>
+                <p>Boost your computer’s speed and performance by upgrading hardware components like RAM and storage.</p>
+            </div>
+            <div class="service-card">
+                <h3>Drivers Installation</h3>
+                <p>We install and update all necessary drivers so your hardware works reliably and efficiently.</p>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        Contact us:
+        <i class='bx bx-envelope'></i>
+        <a href="mailto:shepherdmakasa06@gmail.com">shepherdmakasa06@gmail.com</a>
+        &nbsp;|&nbsp;
+        <i class='bx bx-phone'></i>
+        +263789713315
+    </footer>
+</body>
+</html>
+</body>
+</html>

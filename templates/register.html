@@ -1,0 +1,37 @@
+{% load static %} 
+
+<link rel="stylesheet" href="{% static 'style.css' %}">
+
+<body>
+    <!-- Centered title -->
+     <title>Register</title>
+    <div class="title">PRO-TECH COMPUTER REPAIRS</div>
+    <div class="wrapper">
+        <h1>Sign Up Below</h1>
+        <!-- Display messages below the title -->
+        {% for message in messages %}
+        <h5>{{ message }}</h5>
+        {% endfor %}
+        <form method="POST" action="register">
+            {% csrf_token %}
+            
+            <div class="input-box">
+				<input type="text" name="username" placeholder="Username" required>
+				</div>
+            
+            <div class="input-box">
+				<input type="email" name="email" placeholder="Email" required>
+				</div>
+            
+            <div class="input-box">
+				<input type="password" name="password" placeholder="Password" required>
+				</div>
+            
+            <div class="input-box">
+				<input type="password" name="password2" placeholder="Confirm Password" required><br />
+				</div>
+            <input type="submit" value="Register" class="btnregister" />
+        </form>
+    </div>
+</body>
+

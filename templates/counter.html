@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<!--{% load static %}--> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url("{% static 'pexels-felixmittermeier.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+        }
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+        }
+        .navbar .user-info {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .navbar .logout {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            margin-left: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .navbar .logout:hover {
+            text-decoration: underline;
+        }
+        .container {
+            display: flex;
+            min-height: calc(100vh - 100px); /* Adjusted for footer */
+        }
+        .sidebar {
+            width: 200px;
+            background: rgba(51, 51, 51, 0.6);
+            padding: 20px 0;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu div {
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar-menu div:hover {
+            background-color: #4CAF50;
+        }
+        .sidebar-menu i {
+            margin-right: 8px;
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+        .dashboard {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .dashboard h1 {
+            font-size: 36px;
+            color: #abb2b9;
+            margin-bottom: 20px;
+        }
+        /* Customer Form Styling */
+        #customerFormContainer {
+            display: none;
+            width: 100%;
+            min-height: 400px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #customerFormContainer h2 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 18px;
+        }
+        #customerForm {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid #4CAF50;
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+            min-width: 420px;
+            max-width: 520px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        #customerForm label {
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 4px;
+        }
+        #customerForm input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.7);
+        }
+        .button-row {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .save-btn, .view-btn {
+            flex: 1 1 0;
+            padding: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+        .save-btn { background: #4CAF50; color: #fff; }
+        .save-btn:hover { background: #388e3c; }
+        .view-btn { background: #2196F3; color: #fff; }
+        .view-btn:hover { background: #1565c0; }
+        /* Receipt Template Styling */
+        #receiptContainer {
+            display: none;
+            background: #fff;
+            color: #222;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+            padding: 32px 32px 24px 32px;
+            margin-top: 30px;
+            min-width: 700px;
+            max-width: 900px;
+            width: 100%;
+        }
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .receipt-header .company-name {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 2em;
+            color: #388e3c;
+            font-weight: bold;
+        }
+        .receipt-header .company-details {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        .receipt-title {
+            background: #e0e0e0;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 18px 0 12px 0;
+            padding: 4px 0;
+            letter-spacing: 2px;
+        }
+        .receipt-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .receipt-info-row .left {
+            flex: 2;
+        }
+        .receipt-info-row .right {
+            flex: 1;
+            text-align: right;
+        }
+        .receipt-info-row label {
+            font-weight: bold;
+        }
+        .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .receipt-table th, .receipt-table td {
+            border: 1px solid #222;
+            padding: 6px 8px;
+            text-align: center;
+        }
+        .receipt-table th {
+            background: #e0e0e0;
+        }
+        .receipt-actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+        }
+        .receipt-actions button {
+            padding: 8px 22px;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .save-btn { background: #4CAF50; color: #fff; }
+        .save-btn:hover { background: #388e3c; }
+        .print-btn { background: #2196F3; color: #fff; }
+        .print-btn:hover { background: #1565c0; }
+        .export-btn { background: #FF9800; color: #fff; }
+        .export-btn:hover { background: #e65100; }
+        .receipt-summary-row {
+            margin-top: 18px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .receipt-summary-label {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-right: 18px;
+        }
+        .receipt-summary-value {
+            font-size: 1.2em;
+            color: #388e3c;
+            font-weight: bold;
+            min-width: 120px;
+            text-align: right;
+        }
+        .signature-row {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .signature-block {
+            width: 250px;
+            text-align: center;
+        }
+        .signature-line {
+            border-bottom: 1px solid #222;
+            margin-bottom: 6px;
+            height: 32px;
+        }
+        .footer {
+            width: 100%;
+            background: rgba(51, 51, 51, 0.8);
+            color: #fff;
+            text-align: center;
+            padding: 15px 0 10px 0;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            font-size: 16px;
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+        /* Autocomplete styles */
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            color: #222;
+        }
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .autocomplete-items div:hover {
+            background-color: #e9e9e9;
+        }
+        .autocomplete-active {
+            background-color: #4CAF50 !important;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            Dashboard
+        </div>
+        <div class="user-info">
+            Logged in as: <strong>{{ user.username }}</strong>
+            <a href="{% url 'login' %}" class="logout">Logout</a>
+        </div>
+    </div>
+    <!-- Main Content Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-menu">
+                <div id="addCustomersBtn"><i class='bx bx-user-plus'></i>Add Customers</div>
+                <div id="captureBtn"><i class='bx bx-file'></i>Capture</div>
+                <div><i class='bx bx-bar-chart-alt'></i>Reports</div>
+                <div><i class='bx bx-user-circle'></i>Profile</div>
+            </div>
+        </div>
+        <!-- Dashboard Content -->
+        <div class="dashboard">
+            <h1 id="dashboard-title">
+                Welcome to the Dashboard
+            </h1>
+            <div id="customerFormContainer">
+                <h2>Add Customer</h2>
+                <form id="customerForm" method="post" action="{% url 'add_customer' %}">
+                    {% csrf_token %}
+                    <label for="customer_name">Customer Name:</label>
+                    <input type="text" id="customer_name" name="customer_name" required>
+                    <label for="contact_number">Contact Number:</label>
+                    <input type="text" id="contact_number" name="contact_number" required placeholder="+2637xxxxxxx">
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" required>
+                    <div class="button-row">
+                        <button type="submit" class="save-btn">Save</button>
+                        <button type="button" class="view-btn" onclick="window.location.href='{% url 'view_customers' %}'">View Customers</button>
+                    </div>
+                </form>
+            </div>
+            <!-- Receipt Template -->
+            <div id="receiptContainer">
+                <div class="receipt-header">
+                    <div class="company-name">Pro-Tech Computer Repairs</div>
+                    <div class="company-details">
+                        Address: 1286 Drc Kotwa<br>
+                        Mobile: +263789713315<br>
+                        Email: shepherdmakasa06@gmail.com
+                    </div>
+                </div>
+                <div class="receipt-title">INVOICE</div>
+                <div class="receipt-info-row">
+                    <div class="left">
+                        <label for="toCustomer">TO:</label>
+                        <input type="text" id="toCustomer" placeholder="Search or select customer..." autocomplete="off" style="width: 320px; padding: 5px; border-radius: 4px; border: 1px solid #bbb;">
+                        <div id="autocomplete-list" class="autocomplete-items"></div>
+                    </div>
+                    <div class="right">
+                        <div>
+                            <label for="invoiceDate">Date</label>
+                            <input type="text" id="invoiceDate" readonly style="width: 110px; padding: 5px; border-radius: 4px; border: 1px solid #bbb;">
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <label for="invoiceNum">Invoice #</label>
+                            <input type="text" id="invoiceNum" readonly style="width: 60px; padding: 5px; border-radius: 4px; border: 1px solid #bbb;">
+                        </div>
+                    </div>
+                </div>
+                <table class="receipt-table" id="invoiceTable">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="receiptItems">
+                        <tr>
+                            <td><input type="text" style="width: 100%; box-sizing: border-box;"></td>
+                            <td><input type="number" min="1" value="1" style="width: 60px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 80px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 90px;" readonly></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" style="width: 100%; box-sizing: border-box;"></td>
+                            <td><input type="number" min="1" value="1" style="width: 60px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 80px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 90px;" readonly></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" style="width: 100%; box-sizing: border-box;"></td>
+                            <td><input type="number" min="1" value="1" style="width: 60px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 80px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 90px;" readonly></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" style="width: 100%; box-sizing: border-box;"></td>
+                            <td><input type="number" min="1" value="1" style="width: 60px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 80px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 90px;" readonly></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" style="width: 100%; box-sizing: border-box;"></td>
+                            <td><input type="number" min="1" value="1" style="width: 60px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 80px;"></td>
+                            <td><input type="number" min="0" step="0.01" value="0.00" style="width: 90px;" readonly></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="receipt-summary-row">
+                    <span class="receipt-summary-label">Total Amount:</span>
+                    <span class="receipt-summary-value" id="totalAmount">0.00</span>
+                </div>
+                <div class="signature-row">
+                    <div class="signature-block">
+                        <div class="signature-line"></div>
+                        <div>Customer Signature</div>
+                    </div>
+                    <div class="signature-block">
+                        <div class="signature-line"></div>
+                        <div>Authorized Signature</div>
+                    </div>
+                </div>
+                <div class="receipt-actions">
+                    <button class="save-btn" type="button" onclick="alert('Saved!')">Save</button>
+                    <button class="print-btn" type="button" id="printInvoiceBtn">Print</button>
+                    <button class="export-btn" type="button" onclick="exportReceipt()">Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <div class="footer">
+        <marquee behavior="scroll" direction="left">
+            Copyright &copy; 2025 All rights reserved
+        </marquee>
+    </div>
+    <style>
+        /* Print styles for invoice only */
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #receiptContainer, #receiptContainer * {
+                visibility: visible !important;
+            }
+            #receiptContainer {
+                position: absolute !important;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                background: #fff !important;
+                box-shadow: none !important;
+                color: #222 !important;
+            }
+            #receiptContainer input, #receiptContainer .receipt-actions, #receiptContainer .autocomplete-items {
+                display: none !important;
+            }
+            #printTableBody, #printTableBody * {
+                display: table-row !important;
+                visibility: visible !important;
+            }
+        }
+    </style>
+    <script>
+        // Demo customer list for autocomplete
+        const customers = [
+            "John Doe",
+            "Jane Smith",
+            "Acme Corp",
+            "Shepherd Makasa",
+            "Pro-Tech Computer Repairs"
+        ];
+        // Simple auto-increment for invoice number (should be replaced with backend logic)
+        let invoiceCounter = localStorage.getItem('invoiceCounter') ? parseInt(localStorage.getItem('invoiceCounter')) : 1;
+        function setTodayDate() {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            document.getElementById('invoiceDate').value = `${dd}/${mm}/${yyyy}`;
+        }
+        function setInvoiceNum() {
+            document.getElementById('invoiceNum').value = invoiceCounter;
+        }
+        function incrementInvoiceNum() {
+            invoiceCounter++;
+            localStorage.setItem('invoiceCounter', invoiceCounter);
+        }
+        // Autocomplete for customer search
+        function autocomplete(inp, arr) {
+            let currentFocus;
+            inp.addEventListener("input", function(e) {
+                let a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false;}
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                        b.addEventListener("click", function(e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+            inp.addEventListener("keydown", function(e) {
+                let x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                    currentFocus++;
+                    addActive(x);
+                } else if (e.keyCode == 38) {
+                    currentFocus--;
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+            function addActive(x) {
+                if (!x) return false;
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+                for (let i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                let x = document.getElementsByClassName("autocomplete-items");
+                for (let i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+        // Export receipt as text (demo)
+        function exportReceipt() {
+            alert('Export functionality not implemented in this demo.');
+        }
+        // Calculate and update total amount at the bottom
+        function updateTotalAmount() {
+            let total = 0;
+            document.querySelectorAll("#receiptItems tr").forEach(row => {
+                const totalInput = row.querySelector('input[type="number"]:nth-child(4)');
+                if (totalInput) {
+                    total += parseFloat(totalInput.value) || 0;
+                }
+            });
+            document.getElementById('totalAmount').textContent = total.toFixed(2);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar navigation logic
+            const addBtn = document.getElementById('addCustomersBtn');
+            const captureBtn = document.getElementById('captureBtn');
+            const customerForm = document.getElementById('customerFormContainer');
+            const dashboardTitle = document.getElementById('dashboard-title');
+            const receiptContainer = document.getElementById('receiptContainer');
+            if (addBtn && customerForm && dashboardTitle && receiptContainer) {
+                addBtn.addEventListener('click', function() {
+                    customerForm.style.display = "flex";
+                    dashboardTitle.style.display = "none";
+                    receiptContainer.style.display = "none";
+                });
+            }
+            if (captureBtn && customerForm && dashboardTitle && receiptContainer) {
+                captureBtn.addEventListener('click', function() {
+                    customerForm.style.display = "none";
+                    dashboardTitle.style.display = "none";
+                    receiptContainer.style.display = "block";
+                    setTodayDate();
+                    setInvoiceNum();
+                    updateTotalAmount();
+                });
+            }
+            // Hide both forms on page load
+            if (customerForm && receiptContainer) {
+                customerForm.style.display = "none";
+                receiptContainer.style.display = "none";
+            }
+            // Autocomplete for customer search
+            autocomplete(document.getElementById("toCustomer"), customers);
+            // Calculate total for each row and update total amount
+            function updateRowTotal(row) {
+                const qty = row.querySelector('input[type="number"]:nth-child(2)').value || 0;
+                const price = row.querySelector('input[type="number"]:nth-child(3)').value || 0;
+                row.querySelector('input[type="number"]:nth-child(4)').value = (qty * price).toFixed(2);
+                updateTotalAmount();
+            }
+            document.querySelectorAll("#receiptItems tr").forEach(row => {
+                row.querySelectorAll('input[type="number"]').forEach(input => {
+                    input.addEventListener('input', () => updateRowTotal(row));
+                });
+            });
+            // Save button increments invoice number
+            const saveBtn = document.querySelector("#receiptContainer .save-btn");
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function() {
+                    alert('Saved!');
+                    incrementInvoiceNum();
+                    setInvoiceNum();
+                });
+            }
+            // Print button logic
+            document.getElementById('printInvoiceBtn').addEventListener('click', function() {
+                // Build a printable table from the current input values
+                const receiptContainer = document.getElementById('receiptContainer');
+                const table = document.getElementById('invoiceTable');
+                const tbody = document.getElementById('receiptItems');
+                // Clone the receipt container
+                const printWindow = window.open('', '', 'width=900,height=700');
+                let html = `
+                <html>
+                <head>
+                    <title>Invoice Print</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #fff; }
+                        .company-name { font-family: 'Brush Script MT', cursive; font-size: 2em; color: #388e3c; font-weight: bold; text-align: center; }
+                        .company-details { text-align: center; margin-bottom: 10px; }
+                        .receipt-title { background: #e0e0e0; font-size: 1.5em; font-weight: bold; text-align: center; margin: 18px 0 12px 0; padding: 4px 0; letter-spacing: 2px; }
+                        .receipt-info-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+                        .receipt-info-row .left { flex: 2; }
+                        .receipt-info-row .right { flex: 1; text-align: right; }
+                        .receipt-summary-row { margin-top: 18px; display: flex; justify-content: flex-end; align-items: center; }
+                        .receipt-summary-label { font-weight: bold; font-size: 1.1em; margin-right: 18px; }
+                        .receipt-summary-value { font-size: 1.2em; color: #388e3c; font-weight: bold; min-width: 120px; text-align: right; }
+                        .signature-row { margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+                        .signature-block { width: 250px; text-align: center; }
+                        .signature-line { border-bottom: 1px solid #222; margin-bottom: 6px; height: 32px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                        th, td { border: 1px solid #222; padding: 6px 8px; text-align: center; }
+                        th { background: #e0e0e0; }
+                    </style>
+                </head>
+                <body>
+                    <div class="company-name">Pro-Tech Computer Repairs</div>
+                    <div class="company-details">
+                        Address: 1286 Drc Kotwa<br>
+                        Mobile: +263789713315<br>
+                        Email: shepherdmakasa06@gmail.com
+                    </div>
+                    <div class="receipt-title">INVOICE</div>
+                    <div class="receipt-info-row">
+                        <div class="left">
+                            <strong>TO:</strong> ${document.getElementById('toCustomer').value}
+                        </div>
+                        <div class="right">
+                            <div><strong>Date:</strong> ${document.getElementById('invoiceDate').value}</div>
+                            <div><strong>Invoice #:</strong> ${document.getElementById('invoiceNum').value}</div>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                // Loop through each row and get values
+                tbody.querySelectorAll('tr').forEach(row => {
+                    const desc = row.querySelector('input[type="text"]').value;
+                    const qty = row.querySelector('input[type="number"]:nth-child(2)').value;
+                    const price = row.querySelector('input[type="number"]:nth-child(3)').value;
+                    const total = row.querySelector('input[type="number"]:nth-child(4)').value;
+                    // Only print rows with a description or nonzero total
+                    if (desc.trim() !== "" || parseFloat(total) > 0) {
+                        html += `
+                            <tr>
+                                <td>${desc}</td>
+                                <td>${qty}</td>
+                                <td>${parseFloat(price).toFixed(2)}</td>
+                                <td>${parseFloat(total).toFixed(2)}</td>
+                            </tr>
+                        `;
+                    }
+                });
+                html += `
+                        </tbody>
+                    </table>
+                    <div class="receipt-summary-row">
+                        <span class="receipt-summary-label">Total Amount:</span>
+                        <span class="receipt-summary-value">${document.getElementById('totalAmount').textContent}</span>
+                    </div>
+                    <div class="signature-row">
+                        <div class="signature-block">
+                            <div class="signature-line"></div>
+                            <div>Customer Signature</div>
+                        </div>
+                        <div class="signature-block">
+                            <div class="signature-line"></div>
+                            <div>Authorized Signature</div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                `;
+                printWindow.document.write(html);
+                printWindow.document.close();
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            });
+        });
+    </script>
+</body>
+</html>
