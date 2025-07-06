@@ -1,0 +1,146 @@
+/* Background image for the page */
+body {
+    background: url('pexels-felixmittermeier.jpg') no-repeat center center fixed; /* Add the background image */
+    background-size: cover; /* Ensure the image covers the entire background */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.title{
+    position: absolute;
+    top: 10%; /* Adjust this value to position the title vertically */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    color: grey;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Transparent and blurred wrapper for the form */
+.wrapper {
+    background: rgba(255, 255, 255, 0.3); /* White with transparency */
+    backdrop-filter: blur(10px); /* Apply blur effect */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: center;
+}
+
+/* Styling for the form elements */
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Align icons inside input boxes */
+.input-box {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button.btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button.btn:hover {
+    background-color: #45a049;
+}
+
+.register-link p {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.register-link a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+.wrapper .remember-forgot{
+    display:flex;
+    justify-content: space-between;
+    font-size: 14.5;
+    margin: -15px 0 15px;
+}
+
+/*css for register form */
+
+
+/* Styling for error messages */
+h5 {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Wrapper styling for the form */
+.wrapper {
+    background: rgba(255, 255, 255, 0.3); /* White with transparency */
+    backdrop-filter: blur(10px); /* Apply blur effect */
+    padding: 20px;
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: center;
+    margin: 0 auto; /* Center the wrapper horizontally */
+}
+/* Submit button styling */
+.btnregister {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btnregister:hover {
+    background-color: #45a049;
+}
+
+/* Button styling */
+.action-button {
+    padding: 12px 24px; /* Adjusted padding for a balanced button size */
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px; /* Slightly larger font size */
+    text-transform: uppercase;
+    display: inline-block;
+    text-align: center;
+}
+
+.action-button:hover {
+    background-color: #45a049; /* Hover effect */
+}
+
