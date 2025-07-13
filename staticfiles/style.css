@@ -1,36 +1,35 @@
 /* Background image for the page */
 body {
-    background: url('pexels-felixmittermeier.jpg') no-repeat center center fixed; /* Add the background image */
-    background-size: cover; /* Ensure the image covers the entire background */
+    background: url('pexels-felixmittermeier.jpg') no-repeat center center fixed;
+    background-size: cover;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
-.title{
-    position: absolute;
-    top: 10%; /* Adjust this value to position the title vertically */
-    left: 50%;
-    transform: translate(-50%, -50%);
+.title {
+    position: static;
+    width: 100%;
+    margin-top: 40px;
+    margin-bottom: 24px;
     font-size: 40px;
     color: grey;
     font-weight: bold;
     text-align: center;
+    z-index: 1;
 }
 
 /* Transparent and blurred wrapper for the form */
 .wrapper {
-    background: rgba(255, 255, 255, 0.3); /* White with transparency */
-    backdrop-filter: blur(10px); /* Apply blur effect */
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: 350px;
     text-align: center;
+    margin: 0 auto 40px auto;
 }
 
 /* Styling for the form elements */
@@ -142,5 +141,54 @@ h5 {
 
 .action-button:hover {
     background-color: #45a049; /* Hover effect */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .title {
+        font-size: 32px;
+        margin-top: 24px;
+        margin-bottom: 18px;
+    }
+    .wrapper {
+        width: 90vw;
+        min-width: 0;
+        max-width: 98vw;
+        padding: 12px 6px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+    }
+    h1 {
+        font-size: 1.5em;
+    }
+    .input-box input, .btnregister, button.btn, .action-button {
+        font-size: 1em;
+        padding: 12px 8px;
+    }
+    .input-box input {
+        margin: 6px 0;
+    }
+    .register-link p {
+        font-size: 12px;
+    }
+    .wrapper .remember-forgot {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .title {
+        font-size: 22px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    .wrapper {
+        padding: 5px 2px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+    }
+    h1 {
+        font-size: 1.1em;
+    }
 }
 
