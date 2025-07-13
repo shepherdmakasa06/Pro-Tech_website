@@ -8,8 +8,7 @@ body {
     min-height: 100vh;
 }
 
-.title{
-    /* Remove absolute positioning */
+.title {
     position: static;
     width: 100%;
     margin-top: 40px;
@@ -147,13 +146,15 @@ h5 {
 /* Responsive Design */
 @media (max-width: 600px) {
     .title {
-        font-size: 24px;
-        margin-top: 20px;
-        margin-bottom: 16px;
+        font-size: 32px;
+        margin-top: 24px;
+        margin-bottom: 18px;
     }
     .wrapper {
+        width: 90vw;
+        min-width: 0;
         max-width: 98vw;
-        padding: 10px 5px;
+        padding: 12px 6px;
         border-radius: 8px;
         margin-bottom: 24px;
     }
@@ -175,16 +176,9 @@ h5 {
     }
 }
 
-@media (max-width: 480px) {
-    .wrapper {
-        width: 100%;
-        min-width: 0;
-    }
-}
-
 @media (max-width: 400px) {
     .title {
-        font-size: 16px;
+        font-size: 22px;
         margin-top: 10px;
         margin-bottom: 10px;
     }
