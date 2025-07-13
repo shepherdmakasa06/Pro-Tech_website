@@ -13,10 +13,6 @@ from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 import json
 from .models import Receipt, ReceiptItem
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.http import HttpResponseRedirect
 
 
 # Create your views here.
@@ -69,62 +65,24 @@ def register(request):
             return redirect('register')
         if password == password2:
             if User.objects.filter(email=email).exists():
-                messages.info(request, 'Email already taken!\U0001F612')
+                messages.info(request, 'Email already taken!😒')
                 return redirect('register')
             elif User.objects.filter(username=username).exists():
-                messages.info(request, 'Username already taken!\U0001F612')
+                messages.info(request, 'Username already taken!😒')
                 return redirect('register')
             else:
                 user = User.objects.create_user(username=username, email=email, password=password)
-                user.is_active = False  # Require admin activation
                 user.save()
-                # Send registration email
-                try:
-                    send_mail(
-                        'Pro-Tech Account Registration',
-                        'Your account was created successfully but is not yet active. Please wait for admin approval.',
-                        settings.EMAIL_HOST_USER,
-                        [email],
-                        fail_silently=True,
-                    )
-                except Exception:
-                    pass
                 # Clear verification session data
                 request.session.pop('email_verified', None)
                 request.session.pop('verification_code', None)
                 request.session.pop('email_to_verify', None)
-                messages.info(request, 'Registration successful! Await admin activation.')
                 return redirect('login')
         else:
-            messages.info(request, 'Password not matching!\U0001F612\U0001F612')
+            messages.info(request, 'Password not matching!😒😒')
             return redirect('register')
     else:
-        return render(request, 'register.html')
-
-@staff_member_required
-def user_list(request):
-    users = User.objects.all().order_by('-date_joined')
-    return render(request, 'user_list.html', {'users': users})
-
-@staff_member_required
-def toggle_user_active(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-    if request.method == 'POST' and not user.is_superuser:
-        user.is_active = not user.is_active
-        user.save()
-        # Send activation email if activating
-        if user.is_active:
-            try:
-                send_mail(
-                    'Pro-Tech Account Activated',
-                    'Your Pro-Tech account is now active! Login now at https://pro-tech-website.onrender.com',
-                    settings.EMAIL_HOST_USER,
-                    [user.email],
-                    fail_silently=True,
-                )
-            except Exception:
-                pass
-    return HttpResponseRedirect(reverse('user_list'))
+        return render(request, 'register.html') 
 
 def login(request):
     if request.method =='POST':

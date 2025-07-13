@@ -12,7 +12,5 @@ urlpatterns = [
     path('verify-email-code', views.verify_email_code, name='verify_email_code'),
     path('change_password/', views.change_password, name='change_password'),
     path('save_receipt/', views.save_receipt, name='save_receipt'),
-    path('user_list/', views.user_list, name='user_list'),
-    path('toggle_user_active/<int:user_id>/', views.toggle_user_active, name='toggle_user_active'),
  ]
  
