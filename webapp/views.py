@@ -32,9 +32,9 @@ def send_verification_email(request):
         request.session['email_to_verify'] = email
         try:
             send_mail(
-                'Email Verification',
+                'Pro-Tech verification code: Email Verification',  # Updated subject
                 f'Your verification code is: {verification_code}',
-                settings.EMAIL_HOST_USER,
+                'Pro-Tech <shepherdmakasa06@gmail.com>',  # Updated sender
                 [email],
                 fail_silently=False,
             )
