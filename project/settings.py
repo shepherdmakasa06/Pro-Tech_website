@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-nvn-mz#-lqd$)-=u4j$$=7@@w$=asbl=xi0v@xsksdoej7x324
 DEBUG = False 
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','pro-tech-website-1.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','pro-tech-website.onrender.com']
 
 
 # Application definition
