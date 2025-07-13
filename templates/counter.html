@@ -1,11 +1,11 @@
-<!--{% load static %}-->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard</title>
-    <!-- <link rel="stylesheet" href="{% static 'style.css' %}">-->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
         body {
@@ -14,6 +14,8 @@
             padding: 0;
             background: url("{% static 'pexels-felixmittermeier.jpg' %}") no-repeat center center fixed;
             background-size: cover;
+            display: block !important;
+            min-height: 100vh;
         }
         .navbar {
             display: flex;
@@ -327,7 +329,7 @@
                 <div id="addCustomersBtn"><i class='bx bx-user-plus'></i>Add Customers</div>
                 <div id="captureBtn"><i class='bx bx-file'></i>Capture</div>
                 <div><i class='bx bx-bar-chart-alt'></i>Reports</div>
-                <div><i class='bx bx-user-circle'></i>Profile</div>
+                <div id="profileBtn"><i class='bx bx-user-circle'></i>Profile</div>
             </div>
         </div>
         <!-- Dashboard Content -->
@@ -338,18 +340,18 @@
             <div id="customerFormContainer">
                 <h2>Add Customer</h2>
                 <form id="customerForm" method="post" action="{% url 'add_customer' %}">
-                    {% csrf_token %}
-                    <label for="customer_name">Customer Name:</label>
-                    <input type="text" id="customer_name" name="customer_name" required>
-                    <label for="contact_number">Contact Number:</label>
-                    <input type="text" id="contact_number" name="contact_number" required placeholder="+2637xxxxxxx">
-                    <label for="address">Address:</label>
-                    <input type="text" id="address" name="address" required>
-                    <div class="button-row">
-                        <button type="submit" class="save-btn">Save</button>
-                        <button type="button" class="view-btn" onclick="window.location.href='{% url 'view_customers' %}'">View Customers</button>
-                    </div>
-                </form>
+                {% csrf_token %}
+                <label for="customer_name">Customer Name:</label>
+                <input type="text" id="customer_name" name="name" required>
+                <label for="contact_number">Contact Number:</label>
+                <input type="text" id="contact_number" name="contact_number" required placeholder="+2637xxxxxxx">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required>
+                <div class="button-row">
+                    <button type="submit" class="save-btn">Save</button>
+                    <button type="button" class="view-btn" onclick="window.location.href='{% url 'view_customers' %}'; void(0);">View Customers</button>
+                </div>
+            </form>
             </div>
             <!-- Receipt Template -->
             <div id="receiptContainer">
@@ -443,6 +445,40 @@
             </div>
         </div>
     </div>
+    <!-- Profile Modal (glassmorphism style, compact/expandable) -->
+    <div id="profileOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; justify-content:center; align-items:center;">
+      <div id="profileModal" style="background:rgba(255,255,255,0.25); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border:2px solid #4CAF50; border-radius:16px; max-width:420px; width:95vw; margin:auto; padding:32px 28px; box-shadow:0 8px 32px 0 rgba(31,38,135,0.18); display:flex; flex-direction:column; align-items:center; position:relative; min-height:420px;">
+        <button onclick="closeProfileModal()" style="position:absolute; top:10px; right:16px; background:none; border:none; font-size:1.7em; cursor:pointer; color:#388e3c;">&times;</button>
+        <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:12px;">
+          <i class='bx bx-user-circle' style="font-size:3.2em; color:#388e3c;"></i>
+        </div>
+        <div style="margin-bottom:18px; text-align:center;">
+          <strong>Username:</strong> <span id="profileUsername">{{ user.username }}</span><br>
+          <strong>Email:</strong> <span id="profileEmail">{{ user.email }}</span>
+        </div>
+        <a href="#" id="showChangePassword" style="color:#2196F3; text-decoration:underline; cursor:pointer; margin-bottom:10px;">Change Password</a>
+        <form id="changePasswordForm" method="post" action="{% url 'change_password' %}" style="display:none; width:100%; margin-top:10px;">
+          {% csrf_token %}
+          <div style="margin-bottom:10px;">
+            <label>Current Password:</label><br>
+            <input type="password" name="current_password" required style="width:100%; padding:8px; border-radius:5px; border:1px solid #ccc;">
+          </div>
+          <div style="margin-bottom:10px;">
+            <label>New Password:</label><br>
+            <input type="password" name="new_password" required style="width:100%; padding:8px; border-radius:5px; border:1px solid #ccc;">
+          </div>
+          <div style="margin-bottom:10px;">
+            <label>Confirm New Password:</label><br>
+            <input type="password" name="confirm_new_password" required style="width:100%; padding:8px; border-radius:5px; border:1px solid #ccc;">
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button type="submit" style="flex:1; background:#4CAF50; color:#fff; border:none; border-radius:5px; padding:10px; font-size:1em; cursor:pointer;">Save</button>
+            <button type="button" id="cancelChangePassword" style="flex:1; background:#bbb; color:#222; border:none; border-radius:5px; padding:10px; font-size:1em; cursor:pointer;">Cancel</button>
+          </div>
+          <div id="changePasswordMsg" style="margin-top:10px; color:#388e3c; text-align:center;"></div>
+        </form>
+      </div>
+    </div>
     <!-- Footer -->
     <div class="footer">
         <marquee behavior="scroll" direction="left">
@@ -476,6 +512,7 @@
             }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         // Demo customer list for autocomplete
         const customers = [
@@ -571,7 +608,13 @@
         function exportReceipt() {
             alert('Export functionality not implemented in this demo.');
         }
-        // Calculate and update total amount at the bottom
+        // --- Auto-calculate row totals and overall total ---
+        function updateRowTotal(row) {
+            const qty = row.querySelector('input[type="number"]:nth-child(2)').value || 0;
+            const price = row.querySelector('input[type="number"]:nth-child(3)').value || 0;
+            row.querySelector('input[type="number"]:nth-child(4)').value = (qty * price).toFixed(2);
+            updateTotalAmount();
+        }
         function updateTotalAmount() {
             let total = 0;
             document.querySelectorAll("#receiptItems tr").forEach(row => {
@@ -582,6 +625,130 @@
             });
             document.getElementById('totalAmount').textContent = total.toFixed(2);
         }
+        document.querySelectorAll("#receiptItems tr").forEach(row => {
+            row.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', () => updateRowTotal(row));
+            });
+        });
+
+        // --- Save receipt to backend ---
+        document.querySelector("#receiptContainer .save-btn").onclick = async function() {
+            const customer = document.getElementById('toCustomer').value;
+            const invoiceDate = document.getElementById('invoiceDate').value;
+            const invoiceNum = document.getElementById('invoiceNum').value;
+            const totalAmount = document.getElementById('totalAmount').textContent;
+            const items = [];
+            document.querySelectorAll("#receiptItems tr").forEach(row => {
+                const desc = row.querySelector('input[type="text"]').value;
+                const qty = row.querySelector('input[type="number"]:nth-child(2)').value;
+                const price = row.querySelector('input[type="number"]:nth-child(3)').value;
+                const total = row.querySelector('input[type="number"]:nth-child(4)').value;
+                if (desc.trim() !== "" && parseFloat(qty) > 0) {
+                    items.push({description: desc, quantity: qty, unit_price: price, total: total});
+                }
+            });
+            const data = {
+                customer_name: customer,
+                invoice_number: invoiceNum,
+                total_amount: totalAmount,
+                items: JSON.stringify(items)
+            };
+            const response = await fetch('/save_receipt/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: new URLSearchParams(data)
+            });
+            const result = await response.json();
+            if(result.success) {
+                alert('Receipt saved!');
+            } else {
+                alert('Failed to save receipt.');
+            }
+        };
+
+        // --- Print only the receipt as a clean table ---
+        document.getElementById('printInvoiceBtn').onclick = function() {
+            const receiptContainer = document.getElementById('receiptContainer');
+            const customer = document.getElementById('toCustomer').value;
+            const invoiceDate = document.getElementById('invoiceDate').value;
+            const invoiceNum = document.getElementById('invoiceNum').value;
+            const totalAmount = document.getElementById('totalAmount').textContent;
+            let html = `<div style='font-family:Arial,sans-serif;'>`;
+            html += `<div style='font-size:2em;color:#388e3c;font-weight:bold;text-align:center;'>Pro-Tech Computer Repairs</div>`;
+            html += `<div style='text-align:center;margin-bottom:10px;'>Address: 1286 Drc Kotwa<br>Mobile: +263789713315<br>Email: shepherdmakasa06@gmail.com</div>`;
+            html += `<div style='background:#e0e0e0;font-size:1.5em;font-weight:bold;text-align:center;margin:18px 0 12px 0;padding:4px 0;letter-spacing:2px;'>INVOICE</div>`;
+            html += `<div style='display:flex;justify-content:space-between;margin-bottom:10px;'><div><strong>TO:</strong> ${customer}</div><div><strong>Date:</strong> ${invoiceDate}<br><strong>Invoice #:</strong> ${invoiceNum}</div></div>`;
+            html += `<table style='width:100%;border-collapse:collapse;margin-top:10px;'><thead><tr><th style='border:1px solid #222;padding:6px 8px;'>Description</th><th style='border:1px solid #222;padding:6px 8px;'>Quantity</th><th style='border:1px solid #222;padding:6px 8px;'>Unit Price</th><th style='border:1px solid #222;padding:6px 8px;'>Total</th></tr></thead><tbody>`;
+            document.querySelectorAll("#receiptItems tr").forEach(row => {
+                const desc = row.querySelector('input[type="text"]').value;
+                const qty = row.querySelector('input[type="number"]:nth-child(2)').value;
+                const price = row.querySelector('input[type="number"]:nth-child(3)').value;
+                const total = row.querySelector('input[type="number"]:nth-child(4)').value;
+                if (desc.trim() !== "" && parseFloat(qty) > 0) {
+                    html += `<tr><td style='border:1px solid #222;padding:6px 8px;'>${desc}</td><td style='border:1px solid #222;padding:6px 8px;'>${qty}</td><td style='border:1px solid #222;padding:6px 8px;'>${parseFloat(price).toFixed(2)}</td><td style='border:1px solid #222;padding:6px 8px;'>${parseFloat(total).toFixed(2)}</td></tr>`;
+                }
+            });
+            html += `</tbody></table>`;
+            html += `<div style='margin-top:18px;text-align:right;font-weight:bold;font-size:1.1em;'>Total Amount: <span style='color:#388e3c;font-size:1.2em;'>${totalAmount}</span></div>`;
+            html += `</div>`;
+            const printWindow = window.open('', '', 'width=900,height=700');
+            printWindow.document.write(`<html><head><title>Invoice Print</title></head><body>${html}</body></html>`);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        };
+
+        // --- Export as PDF ---
+        document.querySelector(".export-btn").onclick = function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            let y = 10;
+            doc.setFontSize(18);
+            doc.text('Pro-Tech Computer Repairs', 10, y); y += 8;
+            doc.setFontSize(11);
+            doc.text('Address: 1286 Drc Kotwa', 10, y); y += 6;
+            doc.text('Mobile: +263789713315', 10, y); y += 6;
+            doc.text('Email: shepherdmakasa06@gmail.com', 10, y); y += 10;
+            doc.setFontSize(14);
+            doc.text('INVOICE', 10, y); y += 8;
+            const customer = document.getElementById('toCustomer').value;
+            const invoiceDate = document.getElementById('invoiceDate').value;
+            const invoiceNum = document.getElementById('invoiceNum').value;
+            doc.setFontSize(11);
+            doc.text(`TO: ${customer}`, 10, y); y += 6;
+            doc.text(`Date: ${invoiceDate}`, 10, y); y += 6;
+            doc.text(`Invoice #: ${invoiceNum}`, 10, y); y += 8;
+            // Table header
+            doc.setFontSize(12);
+            doc.text('Description', 10, y);
+            doc.text('Qty', 70, y);
+            doc.text('Unit Price', 90, y);
+            doc.text('Total', 130, y); y += 6;
+            doc.setLineWidth(0.1);
+            doc.line(10, y, 200, y); y += 2;
+            // Table rows
+            document.querySelectorAll("#receiptItems tr").forEach(row => {
+                const desc = row.querySelector('input[type="text"]').value;
+                const qty = row.querySelector('input[type="number"]:nth-child(2)').value;
+                const price = row.querySelector('input[type="number"]:nth-child(3)').value;
+                const total = row.querySelector('input[type="number"]:nth-child(4)').value;
+                if (desc.trim() !== "" && parseFloat(qty) > 0) {
+                    doc.text(desc, 10, y);
+                    doc.text(qty, 70, y);
+                    doc.text(parseFloat(price).toFixed(2), 90, y);
+                    doc.text(parseFloat(total).toFixed(2), 130, y);
+                    y += 6;
+                }
+            });
+            y += 4;
+            doc.setFontSize(13);
+            doc.text(`Total Amount: ${document.getElementById('totalAmount').textContent}`, 10, y);
+            doc.save('receipt.pdf');
+        };
         document.addEventListener('DOMContentLoaded', function() {
             // Sidebar navigation logic
             const addBtn = document.getElementById('addCustomersBtn');
@@ -589,6 +756,10 @@
             const customerForm = document.getElementById('customerFormContainer');
             const dashboardTitle = document.getElementById('dashboard-title');
             const receiptContainer = document.getElementById('receiptContainer');
+            const profileBtn = document.getElementById('profileBtn');
+            const profileOverlay = document.getElementById('profileOverlay');
+            const profileModal = document.getElementById('profileModal');
+
             if (addBtn && customerForm && dashboardTitle && receiptContainer) {
                 addBtn.addEventListener('click', function() {
                     customerForm.style.display = "flex";
@@ -606,6 +777,14 @@
                     updateTotalAmount();
                 });
             }
+            if (profileBtn && profileOverlay) {
+                profileBtn.addEventListener('click', function() {
+                    profileOverlay.style.display = 'flex';
+                    if (dashboardTitle) dashboardTitle.style.display = 'none';
+                    if (customerForm) customerForm.style.display = 'none';
+                    if (receiptContainer) receiptContainer.style.display = 'none';
+                });
+            }
             // Hide both forms on page load
             if (customerForm && receiptContainer) {
                 customerForm.style.display = "none";
@@ -613,18 +792,6 @@
             }
             // Autocomplete for customer search
             autocomplete(document.getElementById("toCustomer"), customers);
-            // Calculate total for each row and update total amount
-            function updateRowTotal(row) {
-                const qty = row.querySelector('input[type="number"]:nth-child(2)').value || 0;
-                const price = row.querySelector('input[type="number"]:nth-child(3)').value || 0;
-                row.querySelector('input[type="number"]:nth-child(4)').value = (qty * price).toFixed(2);
-                updateTotalAmount();
-            }
-            document.querySelectorAll("#receiptItems tr").forEach(row => {
-                row.querySelectorAll('input[type="number"]').forEach(input => {
-                    input.addEventListener('input', () => updateRowTotal(row));
-                });
-            });
             // Save button increments invoice number
             const saveBtn = document.querySelector("#receiptContainer .save-btn");
             if (saveBtn) {
@@ -738,6 +905,70 @@
                 printWindow.close();
             });
         });
+        // Profile modal logic
+        const profileBtn = document.getElementById('profileBtn');
+        const profileOverlay = document.getElementById('profileOverlay');
+        const profileModal = document.getElementById('profileModal');
+        const dashboardTitle = document.getElementById('dashboard-title');
+        const customerForm = document.getElementById('customerFormContainer');
+        const receiptContainer = document.getElementById('receiptContainer');
+
+        if (profileBtn && profileOverlay) {
+          profileBtn.addEventListener('click', function() {
+            profileOverlay.style.display = 'flex';
+            if (dashboardTitle) dashboardTitle.style.display = 'none';
+            if (customerForm) customerForm.style.display = 'none';
+            if (receiptContainer) receiptContainer.style.display = 'none';
+          });
+        }
+        function closeProfileModal() {
+          profileOverlay.style.display = 'none';
+          if (dashboardTitle) dashboardTitle.style.display = '';
+        }
+        // Change password toggle
+        const showChangePassword = document.getElementById('showChangePassword');
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        const cancelChangePassword = document.getElementById('cancelChangePassword');
+        if (showChangePassword && changePasswordForm) {
+          showChangePassword.onclick = function(e) {
+            e.preventDefault();
+            changePasswordForm.style.display = 'block';
+            showChangePassword.style.display = 'none';
+          };
+        }
+        if (cancelChangePassword && changePasswordForm && showChangePassword) {
+          cancelChangePassword.onclick = function() {
+            changePasswordForm.style.display = 'none';
+            showChangePassword.style.display = 'inline';
+            document.getElementById('changePasswordMsg').textContent = '';
+          };
+        }
+        // AJAX for password change
+        if(changePasswordForm) {
+          changePasswordForm.onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(changePasswordForm);
+            const response = await fetch(changePasswordForm.action, {
+              method: 'POST',
+              headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') },
+              body: formData
+            });
+            const result = await response.json();
+            const msgDiv = document.getElementById('changePasswordMsg');
+            if(result.success) {
+              msgDiv.style.color = '#388e3c';
+              msgDiv.textContent = 'Password changed successfully!';
+              setTimeout(() => {
+                changePasswordForm.style.display = 'none';
+                showChangePassword.style.display = 'inline';
+                msgDiv.textContent = '';
+              }, 2000);
+            } else {
+              msgDiv.style.color = '#d32f2f';
+              msgDiv.textContent = result.error || 'Failed to change password.';
+            }
+          };
+        }
     </script>
 </body>
 </html>

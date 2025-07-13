@@ -1,37 +1,262 @@
 {% load static %} 
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="{% static 'style.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<style>
+.input-box {
+    position: relative;
+}
+.input-box input[type="email"], .input-box input[type="text"] {
+    padding-right: 110px;
+}
+#sendBtn, #verifyBtn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 6px 14px;
+    border: none;
+    background: #388e3c;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    z-index: 2;
+}
+#sendBtn:disabled, #verifyBtn:disabled {
+    background: #bbb;
+    cursor: not-allowed;
+}
+#emailStatus {
+    display: inline-block;
+    font-size: 1.2em;
+    margin-left: 2px;
+    vertical-align: middle;
+}
+#emailMsg {
+    font-size: 0.95em;
+    margin-top: 2px;
+    color: #888;
+}
+#emailMsg.valid {
+    color: #388e3c;
+}
+#emailMsg.invalid {
+    color: #d32f2f;
+}
+.verification-code {
+    width: 200px;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.verify-code-btn {
+    padding: 8px 16px;
+    background: #388e3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.verify-code-btn:hover {
+    background: #2e7d32;
+}
+</style>
 
 <body>
-    <!-- Centered title -->
-     <title>Register</title>
+    <title>Register</title>
     <div class="title">PRO-TECH COMPUTER REPAIRS</div>
     <div class="wrapper">
         <h1>Sign Up Below</h1>
-        <!-- Display messages below the title -->
         {% for message in messages %}
         <h5>{{ message }}</h5>
         {% endfor %}
-        <form method="POST" action="register">
+        <form method="POST" action="register" id="registerForm">
             {% csrf_token %}
             
             <div class="input-box">
-				<input type="text" name="username" placeholder="Username" required>
-				</div>
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            
+            <div class="input-box" style="margin-bottom:0;">
+                <input type="email" name="email" id="emailInput" placeholder="example@gmail.com" required autocomplete="off">
+                <button type="button" id="sendBtn" disabled>Send</button>
+            </div>
+            <div id="emailMsg"></div>
+            
+            <div class="input-box" style="margin-bottom:0;">
+                <input type="text" id="codeInput" placeholder="Enter code" autocomplete="off" disabled>
+                <button type="button" id="verifyBtn" disabled>Verify</button>
+            </div>
+            <div>
+                <span id="emailStatus"></span>
+            </div>
+            <div id="verifyMsg"></div>
             
             <div class="input-box">
-				<input type="email" name="email" placeholder="Email" required>
-				</div>
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
             
             <div class="input-box">
-				<input type="password" name="password" placeholder="Password" required>
-				</div>
-            
-            <div class="input-box">
-				<input type="password" name="password2" placeholder="Confirm Password" required><br />
-				</div>
+                <input type="password" name="password2" placeholder="Confirm Password" required><br />
+            </div>
             <input type="submit" value="Register" class="btnregister" />
         </form>
     </div>
-</body>
+   <!-- ... existing code ... -->
+<script>
+    const emailInput = document.getElementById('emailInput');
+    const codeInput = document.getElementById('codeInput');
+    const emailStatus = document.getElementById('emailStatus');
+    const emailMsg = document.getElementById('emailMsg');
+    const verifyMsg = document.getElementById('verifyMsg');
+    const sendBtn = document.getElementById('sendBtn');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const registerForm = document.getElementById('registerForm');
 
+    let emailVerified = false;
+    let verificationInProgress = false;
+    let emailSent = false;
+
+    // Simple email validation
+    emailInput.addEventListener('input', function() {
+        const email = this.value.trim();
+        sendBtn.disabled = !email.includes('@');
+        emailVerified = false; // Reset verification status when email changes
+        emailSent = false; // Reset sent status when email changes
+        
+        if (email.includes('@')) {
+            emailMsg.textContent = 'Ready to send verification email';
+            emailMsg.className = '';
+        } else if (email) {
+            emailMsg.textContent = 'Please enter a valid email';
+            emailMsg.className = 'invalid';
+        } else {
+            emailMsg.textContent = '';
+            emailMsg.className = '';
+        }
+    });
+
+    // Code input validation
+    codeInput.addEventListener('input', function() {
+        const code = this.value.trim();
+        verifyBtn.disabled = !code || !emailSent;
+        
+        if (code && emailSent) {
+            verifyMsg.textContent = 'Ready to verify code';
+            verifyMsg.className = '';
+        } else if (code && !emailSent) {
+            verifyMsg.textContent = 'Please send verification email first';
+            verifyMsg.className = 'invalid';
+        } else {
+            verifyMsg.textContent = '';
+            verifyMsg.className = '';
+        }
+    });
+
+    // Send verification email
+    sendBtn.addEventListener('click', async function() {
+        if (verificationInProgress) return;
+        
+        const email = emailInput.value.trim();
+        verificationInProgress = true;
+        emailMsg.textContent = 'Sending verification email...';
+        emailMsg.className = '';
+        sendBtn.disabled = true;
+
+        try {
+            // Send verification email
+            const sendResponse = await fetch('/send-verification-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: `email=${encodeURIComponent(email)}`
+            });
+
+            if (!sendResponse.ok) {
+                throw new Error('Failed to send verification email');
+            }
+
+            emailMsg.textContent = 'Verification email sent! Please check your inbox and enter the code below.';
+            emailMsg.className = 'valid';
+            emailSent = true;
+            codeInput.disabled = false;
+            verifyBtn.disabled = !codeInput.value.trim();
+            
+        } catch (error) {
+            console.error('Email sending error:', error);
+            emailMsg.textContent = 'Failed to send verification email. Please try again.';
+            emailMsg.className = 'invalid';
+            emailSent = false;
+        } finally {
+            verificationInProgress = false;
+            sendBtn.disabled = !email.includes('@');
+        }
+    });
+
+    // Verify the code
+    verifyBtn.addEventListener('click', async function() {
+        if (verificationInProgress || !emailSent) return;
+        
+        const verificationCode = codeInput.value.trim();
+        if (!verificationCode) return;
+        
+        verificationInProgress = true;
+        verifyMsg.textContent = 'Verifying code...';
+        verifyMsg.className = '';
+        verifyBtn.disabled = true;
+
+        try {
+            const verifyResponse = await fetch('/verify-email-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: `code=${encodeURIComponent(verificationCode)}`
+            });
+
+            if (verifyResponse.ok) {
+                emailStatus.innerHTML = '<i class="fa-solid fa-check" style="color:#388e3c;"></i>';
+                verifyMsg.textContent = 'Email verified successfully!';
+                verifyMsg.className = 'valid';
+                emailVerified = true;
+            } else {
+                emailStatus.innerHTML = '<i class="fa-solid fa-xmark" style="color:#d32f2f;"></i>';
+                verifyMsg.textContent = 'Invalid verification code. Please try again.';
+                verifyMsg.className = 'invalid';
+                emailVerified = false;
+            }
+        } catch (error) {
+            console.error('Verification error:', error);
+            verifyMsg.textContent = 'Verification failed. Please try again.';
+            verifyMsg.className = 'invalid';
+            emailVerified = false;
+        } finally {
+            verificationInProgress = false;
+            verifyBtn.disabled = !codeInput.value.trim() || !emailSent;
+        }
+    });
+
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!emailVerified) {
+            emailMsg.textContent = 'Please verify your email first';
+            emailMsg.className = 'invalid';
+            return;
+        }
+        
+        // If email is verified, submit the form
+        this.submit();
+    });
+</script>

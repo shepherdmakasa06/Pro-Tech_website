@@ -1,40 +1,77 @@
-{%load static%} 
+{% load static %} 
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="{% static 'style.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"> 
 <style>
 h3{
     color: red;
-    text-align: center; /* Center-align the message */
-    margin-top: 10px; /* Add some spacing */
+    text-align: center;
+    margin-top: 10px;
+}
+.input-box {
+    position: relative;
+}
+.input-box input[type="password"], .input-box input[type="text"][name="password"] {
+    padding-right: 40px;
+}
+#togglePassword {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    font-size: 1.2em;
 }
 </style>
 
 <body>
-	<title>Login</title>
+    <title>Login</title>
     <div class="title">PRO-TECH COMPUTER REPAIRS</div>
-	<div class="wrapper">
-		<form action="login" method="POST">
+    <div class="wrapper">
+        <form action="login" method="POST">
             {% csrf_token %} 
-			<h1>Login</h1>
-            {%for message in messages%}
-            <h3>{{message}}</h3>
-            {%endfor%}
-			<div class="input-box">
-				<input type="text" name="username" placeholder="Username" required>
-				</div>
-			<div class="input-box">
-				<input type="password" name="password" placeholder="Password" required>
-                
-				</div>
-			<div class="remember-forgot">
-				<label><input type="checkbox"> Remember me</label>
-				<a href="#">Forgot Password?</a>
-				</div>
-			<button type="submit" class="btn">Login</button>
-			<div class="register-link">
-				<p>Don't have an account?<a href="register">Register</a></p>
-				</div>
-			</form>
-		</div>
-</body>
+            <h1>Login</h1>
+            {% for message in messages %}
+            <h3>{{ message }}</h3>
+            {% endfor %}
+            <div class="input-box">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div class="input-box">
+                <input type="password" name="password" id="passwordInput" placeholder="Password" required>
+                <span id="togglePassword">
+                    <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                </span>
+            </div>
+            <div class="remember-forgot">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="#">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <div class="register-link">
+                <p>Don't have an account?<a href="register">Register</a></p>
+            </div>
+        </form>
+    </div>
+    <script>
+        // Make sure the password input has the correct id
+        const passwordInput = document.getElementById('passwordInput');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
 
+        // Fix: Add event listener after DOM is loaded
+        togglePassword.addEventListener('click', function () {
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+    </script>
+</body>
